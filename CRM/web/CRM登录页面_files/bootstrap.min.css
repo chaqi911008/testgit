@@ -1,0 +1,323 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="expires" content="0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="/css/Login-interface.css" rel="stylesheet" type="text/css">
+    <script src="/js/jquery-1.10.2.min.js" type="text/javascript"></script>
+    <script src="/js/auto-size.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/bootstrap-3.3.5-dist/js/bootstrap.js" type="text/javascript"></script>
+    <script src="/js/layer/layer.js" type="text/javascript"></script>
+    <script src="/js/layer/art_layer.js" type="text/javascript"></script>
+    <script src="/js/jquery.vegas.js" type="text/javascript" charset="utf-8"></script>
+    <title>CRM登录页面</title>
+    <script type="text/javascript">
+        $(function(){
+            setFontSize();
+        })
+        $.vegas('slideshow', {
+            delay: 4000,
+            cover:true,
+            backgrounds: [
+                {src: 'images/login/Signin-bg.jpg', fade: 2000},
+                {src: 'images/login/Signin-bg2.jpg', fade: 2000},
+                {src: 'images/login/Signin-bg3.jpg', fade: 2000}
+            ]
+        });
+        if (top.location != self.location)top.location = self.location;
+    </script>
+</head>
+<body>
+
+
+
+<!--登录页 start-->
+<div class="Signin-bg">
+    <div class="tile">
+        <img class="logo" src="images/login/logo.png" alt="logo" />
+        <form class="signin" id="formId"  role="form" action="login.shtml" method="post">
+            <h3>客户商机管理系统</h3>
+            <div class="btn-box">
+                <i></i>
+                <input type="text" placeholder="请输入账号" id="loginNameId" class="accountNumber" name="loginname" autofocus />
+            </div>
+            <div class="btn-box">
+                <i class="icon2"></i>
+                <input type="password" id="passWordId" placeholder="请输入密码" class="passWord" name="password" required />
+            </div>
+            <div id="sendMessageId" style="display: none" class="btn-box">
+                <i class="icon2"></i>
+                <input type="code" id="code" placeholder="请输入验证码" size="20px" class="passWord" name="code" required />
+                <button type="button" onclick="getTest()" id="getCode" class="sendcode">获取验证码</button>
+               
+            </div> 
+            <input type="button" onclick ="validate()" value="登录" class="button-submit btn btn-lg btn-warning btn-block" />
+            
+        </form>
+    </div>
+    <h4 class="copyright">Copyright © 2015-2017.Company www.dgg.net All rights reserved. Created By: 顶呱呱集团-技术中心</h4>
+</div>
+<!--登录页 end-->
+
+<div class="founds-pwd" id="found">
+    <form>
+        <ul class="found-ul">
+            <li>
+                <input type="text" placeholder="请输入工号" id="jobNum">
+            </li>
+            <li>
+                <input type="password" placeholder="请输入新密码" id="newPwd">
+                <p class="pwd-tip">
+                    <span>密码至少为6位，需要数字和字母的组合(不能有符号)</span>
+                </p>
+            </li>
+            <li>
+                <input type="password" placeholder="请重复输入新密码" id="newPwd1">
+                <p class="pwd-tip">
+                    <span>重复输入密码</span>
+                </p>
+            </li>
+            <li class="get-test">
+                <input type="text" placeholder="请输入验证码" id="testNum">
+                <button type="button" onclick="getTest()" >获取验证码</button>
+            </li>
+            <li class="btn">
+                <button type="button"  id="rest-btn" class="disabled">重置密码</button>
+            </li>
+        </ul>
+    </form>
+</div>
+
+<script type="text/javascript">
+    if ("" != "") {
+        msg.error("");
+    };
+
+    $(function(){
+        $('#found input').keyup(function(){
+            var jobNum=$.trim(document.getElementById('jobNum').value);
+            var testNum=$.trim(document.getElementById('testNum').value);
+            var pwd= $.trim(document.getElementById('newPwd').value);
+            var sPwd= $.trim(document.getElementById('newPwd1').value);
+            if (jobNum==''|| testNum=='' || pwd==''|| pwd!=sPwd) {
+                $('#rest-btn').removeAttr("onclick");
+                $('#rest-btn').addClass("disabled");
+            }else {
+                $('#rest-btn').attr("onclick","testPwd()");
+                $('#rest-btn').removeClass("disabled");
+            }
+        });
+        $('#newPwd').keyup(function(){
+            var reg = new RegExp("^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,20}$");
+            var pwdV=$(this).val();
+            if(!reg.test(pwdV)) {
+                $(this).next('.pwd-tip').html('<span class="red">密码至少为6位，需要数字和字母的组合(不能有符号)</span>');
+            }else {
+                $(this).next('.pwd-tip').html('<span class="green">输入正确</span>');
+            }
+        });
+        $('#newPwd1').keyup(function(){
+            var pwdV=$('#newPwd').val();
+            var pwdV1=$(this).val();
+            if(pwdV==pwdV1) {
+                $(this).next('.pwd-tip').html('<span class="green">密码输入一致</span>');
+            }else {
+                $(this).next('.pwd-tip').html('<span class="red">两次密码不同</span>');
+            }
+        })
+    });
+    function found() {
+        layer.open({
+            type:1,
+            title:'找回密码',
+            area:['340px'],
+            content:$('#found'),
+            end:function(){
+                document.getElementById('jobNum').value='';
+                document.getElementById('testNum').value='';
+                wait=0;
+            }
+        });
+    }
+    //验证密码
+    function testPwd(){
+        var jobNum=$.trim(document.getElementById('jobNum').value);
+        var testNum=$.trim(document.getElementById('testNum').value);
+        var pwd= $.trim(document.getElementById('newPwd').value);
+        var sPwd= $.trim(document.getElementById('newPwd1').value);
+        if (jobNum==''|| testNum=='' || pwd=='') {
+            layer.msg('工号/密码/验证码不能为空');
+        }else if(pwd!=sPwd) {
+            layer.msg('两次密码不一致');
+        }
+        else  {
+            $.ajax({
+                post:'POST',
+                url:'/user/update_pwd.shtml',
+                dataType:'json',
+                data:{'jobNumber':jobNum,'pwd':pwd,'sPwd':sPwd,'code':testNum},
+                success:function(data){
+                    if(data.code==1) {
+                        layer.closeAll();
+                        msg.info(data.msg);
+                        setTimeout("window.location.reload()", 1000);
+                    }
+                    else {
+                        msg.info(data.msg);
+                    }
+                }
+            })
+        }
+    }
+    var wait=120;
+
+    //获取验证码
+    function getTest(){
+        var reg = new RegExp("^[0-9]*$");
+        var jobObj=document.getElementById('loginNameId');
+        var jobNum= $.trim(jobObj.value);
+        if(!reg.test(jobNum) || jobNum=='') {
+            $('#getCode').attr("onclick","getTest(this)");
+            layer.msg('请输入正确的工号');
+        }else {
+            $.ajax({
+                post:'POST',
+                url:'/user/confirm_phone.shtml',
+                dataType:'json',
+                data:{'jobNumber':jobNum},
+                async: true,
+                success:function(msg) {
+                    if(msg.code==1) {
+                        layer.confirm('发送号码为：<b style="color:#ff2e0a;font-weight: bold;">'+msg.phoneNumber+'</b>', {
+                            btn: ['确定','取消'] //按钮
+                        }, function(index){
+                            getTestMain(jobNum);
+                            layer.close(index);
+                        });
+                    }else {
+                        layer.msg(msg.msg);
+                    }
+                }
+            })
+        }
+
+    }
+    function getTestMain(jobNum){
+        $.ajax({
+            post:'POST',
+            url:'/user/get_forget_pwd_validate_code.shtml',
+            dataType:'json',
+            data:{'jobNumber':jobNum},
+            async: false,
+            success:function(num) {
+                if(num.code==1) {
+                    time();
+                }else {
+                    layer.msg(num.msg);
+                }
+            }
+        })
+    }
+    //获取验证码倒计时
+    function time() {
+        if (wait==0) {
+            $('#getCode').attr("onclick","getTest(this)");
+            $('#getCode').removeClass('disabled').text('获取验证码');
+            wait=120;
+        }else {
+            $('#getCode').removeAttr("onclick");
+            $('#getCode').addClass('disabled').text(wait+'s后重新获取');
+            wait--;
+            setTimeout(function () {
+                time();
+            },
+            1000);
+        }
+    }
+    
+    //回车登陆
+    document.onkeydown=function() {
+    	if(event.keyCode==13) {
+    		validate();
+   		}
+   	}
+
+    //验证验证码
+	function validate(){
+	var loginName = $("#loginNameId").val();
+	var isTrue = false;
+    	$.ajax({
+            type:'POST',
+            url:'/check_login_name_is_xd.shtml',
+            data:{'loginName':loginName},
+            success:function(data){
+            	/*var va = data.status;
+            	isMsg = true;
+            	if(data.status == 'success'){
+            		//小顶家装
+            		if($("#sendMessageId").css("display")=="none"){
+            			$("#sendMessageId").show();
+                		return false;
+                	}
+            	}else{
+            		//否
+            		isTrue = true;
+            		$("#sendMessageId").hide();
+            	}*/
+            	
+            	var jobObj=document.getElementById('loginNameId');
+                var jobNum= $.trim(jobObj.value);
+        		var code = $("#code").val();
+        		var passWord = $("#passWordId").val();
+        		if(null==jobNum || ""==jobNum){
+        			layer.msg("工号不能为空");
+        			return false;
+        		}
+        		if(null==passWord || ""==passWord){
+        			layer.msg("密码不能为空");
+        			return false;
+        		}
+
+                $("#formId").submit();
+                /*if($("#sendMessageId").css("display")=="none" && isTrue==true){
+            	}else{
+            		
+            		if(null==code || ""==code){
+            			layer.msg("验证码不能为空");
+            			return false;
+            		}
+            		$.ajax({
+                        post:'POST',
+                        url:'/user/checkout_code.shtml',
+                        dataType:'json',
+                        data:{'jobNumber':jobNum,'code':code},
+                        async: false,
+                        success:function(num) {
+                            if(num.code==1) {
+                                $("#formId").submit();
+                            }else {
+                                layer.msg(num.msg);
+                            }
+                        }
+                    })
+            	}*/
+            }
+        })
+    	
+    	
+		
+	}
+
+
+</script>
+
+</body>
+</html>

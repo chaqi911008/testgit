@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaqi.mapper.PlanMapper">
+    <resultMap id="plan" type="sal_Plan">
+        <id property="pla_id" column="pla_id"/>
+        <result property="pla_chc_id" column="pla_chc_id"/>
+        <result property="pla_date" column="pla_date"/>
+        <result property="pla_todo" column="pla_todo"/>
+        <result property="pla_result" column="pla_result"/>
+        <association property="sal_chance" javaType="sal_Chance">
+            <id property="chc_id" column="chc_id"/>
+            <result property="chc_source" column="chc_source"/>
+            <result property="chc_cust_name" column="chc_cust_name"/>
+            <result property="chc_title" column="chc_title"/>
+            <result property="chc_rate" column="chc_rate"/>
+            <result property="chc_linkman" column="chc_linkman"/>
+            <result property="chc_tel" column="chc_tel"/>
+            <result property="chc_desc" column="chc_desc"/>
+            <result property="chc_create_id" column="chc_create_id"/>
+            <result property="chc_create_by" column="chc_create_by"/>
+            <result property="chc_create_date" column="chc_create_date"/>
+            <result property="chc_due_id" column="chc_due_id"/>
+            <result property="chc_due_to" column="chc_due_to"/>
+            <result property="chc_due_date" column="chc_due_date"/>
+            <result property="chc_status" column="chc_status"/>
+        </association>
+    </resultMap>
+    <select id="selectPlanAll" parameterType="java.util.Map" resultMap="plan">
+        select * from sal_plan p,sal_chance ch
+        <where>
+            p.pla_chc_id=ch.chc_id
+            <if test="chc_cust_name !=null and chc_cust_name!=''">
+                and ch.chc_cust_name LIKE '%${chc_cust_name}%'
+            </if>
+            <if test="chc_title !=null and chc_title !=''">
+                and ch.chc_title LIKE '%${chc_title}%'
+            </if>
+            <if test="chc_linkman !=null and chc_linkman !=''">
+                and ch.chc_linkman LIKE '%${chc_linkman}%'
+            </if>
+        </where>
+        limit ${(pageNow-1)*pageSize},${pageSize}
+    </select>
+
+    <select id="selectPlanCount" resultType="long" parameterType="java.util.Map">
+          select count(1) from sal_plan p,sal_chance ch
+        <where>
+            p.pla_chc_id=ch.chc_id
+            <if test="chc_cust_name !=null and chc_cust_name!=''">
+                and ch.chc_cust_name LIKE '%${chc_cust_name}%'
+            </if>
+            <if test="chc_title !=null and chc_title !=''">
+                and ch.chc_title LIKE '%${chc_title}%'
+            </if>
+            <if test="chc_linkman !=null and chc_linkman !=''">
+                and ch.chc_linkman LIKE '%${chc_linkman}%'
+            </if>
+        </where>
+    </select>
+
+
+    <select id="selectPlanById" resultType="sal_Plan" parameterType="long">
+        select * from sal_plan WHERE pla_chc_id=#{id}
+    </select>
+
+
+    <insert id="addPlan" parameterType="java.util.Map">
+        insert into sal_plan(pla_chc_id,pla_date,pla_todo) VALUE (#{pla_chc_id},#{pla_date},#{pla_todo})
+    </insert>
+
+    <delete id="delPlan" parameterType="long">
+        DELETE from sal_plan where pla_id=#{pla_id}
+    </delete>
+
+    <update id="updatePlan" parameterType="java.util.Map">
+        UPDATE sal_plan SET pla_todo=#{pla_todo} where pla_id=#{pla_id}
+    </update>
+
+    <update id="updatePlanResult" parameterType="java.util.Map">
+        UPDATE sal_plan SET pla_result=#{pla_result} where pla_id=#{pla_id}
+    </update>
+</mapper>

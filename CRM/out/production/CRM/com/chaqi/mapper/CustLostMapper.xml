@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaqi.mapper.CustLostMapper">
+    <!-- 根据时间段查询流失客户信息-->
+   <!-- <select id="selectCountByTime" parameterType="cst_Lost">
+        SELECT COUNT(1) FROM cst_lost WHERE lst_last_order_date=&gt;#{lst_last_order_date} AND lst_lost_date &lt;#{lst_lost_date}
+    </select>-->
+    <!-- 根据条件模糊查询流失客户信息-->
+    <select id="selectLostAll" parameterType="java.util.Map" resultType="cst_Lost">
+        select * from cst_lost
+        <where>
+            <if test="lst_cust_name !=null and lst_cust_name!=''">
+                and lst_cust_name LIKE '%${lst_cust_name}%'
+            </if>
+            <if test="lst_status !=null and lst_status !=''">
+                and lst_status LIKE '%${lst_status}%'
+            </if>
+        </where>
+        limit ${(pageNow-1)*pageSize},${pageSize}
+    </select>
+    <!-- 根据条件模糊查询流失客户人数-->
+    <select id="selectLostCount" resultType="long" parameterType="java.util.Map">
+        select count(1) from cst_lost
+        <where>
+            <if test="lst_cust_name !=null and lst_cust_name!=''">
+                and lst_cust_name LIKE '%${lst_cust_name}%'
+            </if>
+            <if test="lst_status !=null and lst_status !=''">
+                and lst_status LIKE '%${lst_status}%'
+            </if>
+        </where>
+    </select>
+    <!--根据编号删除流失客户信息-->
+    <delete id="delLost" parameterType="long">
+        DELETE FROM cst_lost where lst_id =#{lst_id}
+    </delete>
+    <!--修改流失客户信息-->
+    <update id="updateLost" parameterType="cst_Lost">
+        UPDATE cst_lost SET
+    </update>
+    <insert id="addLost" parameterType="cst_Lost">
+        INSERT INTO cst_lost VALUES (NULL ,#{lst_cust_no},#{lst_cust_name},#{lst_cust_manager_id},#{lst_cust_manager_name},
+        #{lst_last_order_date},#{lst_lost_date},#{lst_delay},#{lst_reason},#{lst_status})
+    </insert>
+
+    <select id="selectLost" parameterType="java.util.Map" resultType="long">
+        SELECT COUNT(1) FROM cst_lost WHERE lst_lost_date &gt;=#{startTime} and lst_lost_date &lt;#{endTime}
+    </select>
+</mapper>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaqi.mapper.SalChanceMapper">
+    <select id="selectSalChanceAll" parameterType="java.util.Map" resultType="sal_Chance">
+        select * from sal_chance
+        <where>
+            chc_status != 3
+            <if test="chc_cust_name !=null and chc_cust_name!=''">
+                  and chc_cust_name LIKE '%${chc_cust_name}%'
+            </if>
+            <if test="chc_title !=null and chc_title !=''">
+                and chc_title LIKE '%${chc_title}%'
+            </if>
+            <if test="chc_linkman !=null and chc_linkman !=''">
+                and chc_linkman LIKE '%${chc_linkman}%'
+            </if>
+        </where>
+        limit ${(pageNow-1)*pageSize},${pageSize}
+    </select>
+
+    <select id="selectSalChanceCount" resultType="long" parameterType="java.util.Map">
+        select COUNT(1) from sal_chance
+        <where>
+            chc_status != 3
+            <if test="chc_cust_name !=null and chc_cust_name!=''">
+                and chc_cust_name LIKE '%${chc_cust_name}%'
+            </if>
+            <if test="chc_title !=null and chc_title !=''">
+                and chc_title LIKE '%${chc_title}%'
+            </if>
+            <if test="chc_linkman !=null and chc_linkman !=''">
+                and chc_linkman LIKE '%${chc_linkman}%'
+            </if>
+        </where>
+    </select>
+
+    <insert id="addSalChance" parameterType="sal_Chance">
+        insert into sal_chance(chc_source,chc_cust_name,chc_title,chc_rate,chc_linkman,
+        chc_tel,chc_desc,chc_create_id,chc_create_by,chc_create_date,chc_due_id,chc_due_to,chc_due_date,chc_status)
+        value(#{chc_source},#{chc_cust_name},#{chc_title},#{chc_rate},#{chc_linkman},#{chc_tel},#{chc_desc},
+        #{chc_create_id},#{chc_create_by},#{chc_create_date},#{chc_due_id},#{chc_due_to},#{chc_due_date},#{chc_status})
+    </insert>
+
+
+    <select id="selectSalChanceById" parameterType="long" resultType="sal_Chance">
+        select * from sal_chance where chc_id=#{id}
+    </select>
+
+    <update id="updateSalChanceStatus" parameterType="java.util.Map">
+        UPDATE sal_chance SET chc_status=#{chc_status} where chc_id=#{chc_id}
+    </update>
+</mapper>

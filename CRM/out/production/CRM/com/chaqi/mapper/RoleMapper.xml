@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaqi.mapper.RoleMapper">
+    <select id="selectRoleAll" parameterType="java.util.Map" resultType="sys_role">
+        select * from sys_role limit ${(pageNow-1)*pageSize},${pageSize}
+    </select>
+    <select id="selectRoleCount" resultType="long">
+        select count(1) from sys_role
+    </select>
+    <insert id="addRole" parameterType="sys_role">
+        insert into sys_role(role_name,role_desc,role_flag) VALUE (#{role_name},#{role_desc},#{role_flag})
+    </insert>
+    <update id="updateRole" parameterType="sys_role">
+        UPDATE sys_role SET role_name=#{role_name},role_desc=#{role_desc},role_flag=#{role_flag} where role_id=#{role_id}
+    </update>
+    <delete id="delRole" parameterType="long">
+        DELETE FROM sys_role where role_id=#{id}
+    </delete>
+</mapper>

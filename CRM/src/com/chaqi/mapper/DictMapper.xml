@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.chaqi.mapper.DictMapper">
+	
+	<select id="select" resultType="bas_Dict" parameterType="java.util.Map">
+		select * from bas_Dict
+		<where>
+			<if test="dict_type!=null and dict_type !=''">
+				and dict_type like '%${dict_type}%'
+			</if>
+			<if test="dict_item !=null and dict_item!=''">
+				and dict_item like '%${dict_item}%'
+			</if>
+			
+			<if test="dict_value !=null and dict_value!=''">
+				and dict_value like '%${dict_value}%'
+			</if>
+		</where>
+		limit ${(pageNow-1)*pageSize},${pageSize}
+	</select>
+	
+	<select id="selectUserCount" resultType="long" parameterType="java.util.Map">
+		select count(1) from bas_Dict
+		<where>
+			<if test="dict_type!=null and dict_type !=''">
+				and dict_type like '%${dict_type}%'
+			</if>
+			<if test="dict_item !=null and dict_item!=''">
+				and dict_item like '%${dict_item}%'
+			</if>
+			<if test="dict_value !=null and dict_value!=''">
+				and dict_value like '%${dict_value}%'
+			</if>
+			</where>
+	</select>
+	<delete id="dalete" parameterType="long">
+		delete from bas_Dict where dict_id=#{id}
+	</delete>
+
+
+	<select id="selectAll" resultType="bas_Dict">
+		select * from bas_dict where dict_type='机会来源'
+	</select>
+</mapper>

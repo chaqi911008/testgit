@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaqi.mapper.UserMapper">
+    <select id="selectUserAll" resultType="sys_user" parameterType="java.util.Map">
+        select * from sys_user limit ${(pageNow-1)*pageSize},${pageSize}
+    </select>
+    <insert id="addUser" parameterType="sys_user">
+        insert into sys_user(user_name,user_password,user_role_id,user_flag) value(#{user_name},#{user_password},#{user_role_id},#{user_flag})
+    </insert>
+
+    <select id="selectUserByName" parameterType="sys_user" resultType="sys_user">
+        select * from sys_user where user_name=#{user_name} and user_password=#{user_password}
+    </select>
+    <select id="selectUserCount" resultType="long">
+        select count(1) from sys_user
+    </select>
+    <update id="updateUser" parameterType="sys_user">
+        UPDATE sys_user SET user_name=#{user_name},user_password=#{user_password},
+        user_role_id=#{user_role_id},user_flag=#{user_flag} where user_id=#{user_id}
+    </update>
+    <delete id="deleteUser" parameterType="long">
+        DELETE FROM sys_user WHERE user_id=#{id}
+    </delete>
+
+    <select id="selectUser" parameterType="java.util.Map" resultType="sys_user">
+        select * from sys_user
+        <where>
+            <if test="user_name !=null and user_name !=''">
+                and user_name like '%${user_name}%'
+            </if>
+            <if test="user_role_id !=null and user_role_id !=''">
+                and user_role_id like '%${user_role_id}%'
+            </if>
+        </where>
+        limit ${(pageNow-1)*pageSize},${pageSize}
+    </select>
+
+    <select id="selectCountByName" resultType="long" parameterType="java.util.Map">
+        SELECT count(1) from sys_user
+        <where>
+            <if test="user_name !=null and user_name!=''">
+                and user_name like '%${user_name}%'
+            </if>
+            <if test="user_role_id!=null and user_role_id !=''">
+                and user_role_id like '%${user_role_id}%'
+            </if>
+        </where>
+    </select>
+        <resultMap id="user" type="sys_user">
+            <id property="user_id" column="user_id"/>
+            <result property="user_name" column="user_name"/>
+            <result property="user_role_id" column="user_role_id"/>
+            <result property="user_flag" column="user_flag"/>
+            <association property="sys_role" javaType="sys_role">
+                <id property="role_id" column="role_id"/>
+                <result property="role_name" column="role_name"/>
+                <result property="role_desc" column="role_desc"/>
+                <result property="role_flag" column="role_flag"/>
+            </association>
+        </resultMap>
+    <select id="selectUserById" parameterType="long" resultMap="user">
+        select * from sys_user u,sys_role r where u.user_role_id=r.role_id and u.user_id=#{id}
+    </select>
+
+    <update id="updateById" parameterType="java.util.Map">
+        update sys_user SET user_role_id=#{role_id} where user_id=#{user_id}
+    </update>
+
+    <select id="selectUserName" resultType="sys_user">
+        select user_id,user_name from sys_user
+    </select>
+</mapper>

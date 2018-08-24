@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaqi.mapper.CustomerMapper">
+    <!--根据条件模糊查询客户信息-->
+    <select id="selectCustomerAll" parameterType="java.util.Map" resultType="cst_Customer">
+        select * from cst_customer
+            <where>
+                <if test="cust_name !=null and cust_name!=''">
+                    and cust_name LIKE '%${cust_name}%'
+                </if>
+                <if test="cust_level !=null and cust_level!=''">
+                    and cust_level LIKE  '%${cust_level}%'
+                </if>
+                <if test="cust_status !=null and cust_status !=''">
+                    and cust_status LIKE '%${cust_status}%'
+                </if>
+            </where>
+        limit ${(pageNow-1)*pageSize},${pageSize}
+    </select>
+    <!--根据条件模糊查询客户信息的总条数-->
+    <select id="selectCustomerCount" parameterType="java.util.Map" resultType="long">
+        select COUNT(1) from cst_customer
+        <where>
+            <if test="cust_name !=null and cust_name!=''">
+                and cust_name LIKE '%${cust_name}%'
+            </if>
+            <if test="cust_level !=null and cust_level!=''">
+                and cust_level LIKE  '%${cust_level}%'
+            </if>
+            <if test="cust_status !=null and cust_status !=''">
+                and cust_status LIKE '%${cust_status}%'
+            </if>
+        </where>
+    </select>
+    <!--根据客户编号查询客户信息-->
+    <select id="selectCustomerById" parameterType="long" resultType="cst_Customer">
+        select * from cst_customer where cust_no=#{id}
+    </select>
+    <!--修改客户状态-->
+    <update id="updateCustomerStatus" parameterType="long">
+        UPDATE cst_customer SET cust_status=3 where cust_no=#{id}
+    </update>
+    <!--修改客户信息-->
+    <update id="updateCst" parameterType="cst_Customer">
+        UPDATE cst_customer SET cust_name=#{cust_name},cust_region=#{cust_region},cust_level=#{cust_level},cust_level_label=#{cust_level_label},
+        cust_satisfy=#{cust_satisfy},cust_credit=#{cust_credit},cust_addr=#{cust_addr},cust_zip=#{cust_zip},cust_tel=#{cust_tel},cust_fax=#{cust_fax},cust_website=#{cust_website},cust_licence_no=#{cust_licence_no},
+        cust_chieftain=#{cust_chieftain},cust_status=#{cust_status} WHERE cust_no=#{cust_no}
+    </update>
+
+    <insert id="addCustomer" parameterType="cst_Customer">
+        INSERT INTO cst_customer VALUES(NULL,#{cust_name},#{cust_region},#{cust_manager_id},
+		#{cust_manager_name},#{cust_level},#{cust_level_label},#{cust_satisfy},#{cust_credit},#{cust_addr},#{cust_zip},
+		#{cust_tel},#{cust_fax},#{cust_website},#{cust_licence_no},#{cust_chieftain},#{cust_bankroll},#{cust_turnover},#{cust_bank},#{cust_bank_account},
+		#{cust_local_tax_no},#{cust_national_tax_no},#{cust_status})
+    </insert>
+
+
+    <!-- 客户构成分析 -->
+    <select id="selectDqAndCount" resultType="CustomerCompositionAnalysis">
+        SELECT cust_region,COUNT(1) count FROM `cst_customer` GROUP BY cust_region
+    </select>
+</mapper>

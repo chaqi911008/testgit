@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.chaqi.mapper.OrderMapper">
+	<!-- 添加 -->
+	<insert id="Orders_Insert" parameterType="orders">
+		INSERT INTO orders(odr_customer,odr_date,odr_type,odr_cost,odr_status) VALUES(#{odr_customer},#{odr_date},#{odr_type},#{odr_cost},#{odr_status})
+	</insert>
+	<!-- 模糊查询 -->
+  	<select id="Orders_Select_Mo" resultType="orders" parameterType="java.util.Map">
+		SELECT * FROM `orders`
+		 <where>
+			 odr_status!=2
+			 <if test="odr_customer !=null and odr_customer !=''">
+				 and `odr_customer` LIKE '%${odr_customer}%'
+			 </if>
+			 <if test="odr_type !=null and odr_type !=''">
+				 and `odr_type` LIKE '%${odr_type}%'
+			 </if>
+		 </where>
+		LIMIT ${(pageNow-1)*pageSize},${pageSize}
+	</select>
+	<!-- 模糊查询总条数 -->
+	<select id="Orders_SelectCount"  resultType="long" parameterType="java.util.Map">
+		SELECT COUNT(1) FROM `orders`
+		<where>
+			odr_status!=2
+		<if test="odr_customer !=null and odr_customer !=''">
+			and `odr_customer` LIKE '%${odr_customer}%'
+		</if>
+		<if test="odr_type !=null and odr_type !=''">
+			and `odr_type` LIKE '%${odr_type}%'
+		</if>
+	</where>
+	</select>
+	<!-- 修改 -->
+	<update id="Orders_Update" parameterType="orders">
+		 update `orders` set `odr_customer` = #{odr_customer} , `odr_date` = #{odr_date}, `odr_type` = #{odr_type} , `odr_cost` = #{odr_cost} where `odr_id` = #{odr_id}
+	</update>
+	<!-- 通过chc_id查询sal_Chance表中的数据 -->
+	<select id="selectOrderByid" resultType="orders">
+		select * from orders where odr_id=#{odr_id}
+	</select>
+	
+	<!-- 联合用户表查询可以指派的用户 -->
+	<select id="SelectOrders" resultType="orders">
+		select * from orders
+	</select>
+	<!-- 删除 -->
+	<update id="Order_Delete" parameterType="java.util.Map">
+		UPDATE  orders SET odr_status=#{odr_status} where odr_id=#{odr_id}
+	</update>
+	
+</mapper>
+

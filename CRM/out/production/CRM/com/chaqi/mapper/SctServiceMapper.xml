@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chaqi.mapper.SctServiceMapper">
+<select id="selectSctAll" parameterType="java.util.Map" resultType="sct_Service">
+    select * from sct_service
+    <where>
+        <if test="svr_cust_name !=null and svr_cust_name!=''">
+           and svr_cust_name LIKE '%${svr_cust_name}%'
+        </if>
+        <if test="svr_title !=null and svr_title!=''">
+            and svr_title LIKE '%${svr_title}%'
+        </if>
+        <if test="svr_type !=null and svr_type!=''">
+            and svr_type LIKE '%${svr_type}%'
+        </if>
+        <if test="svr_create_date!=null and svr_create_date !='' and svr_create_date1!=null and svr_create_date1!=''">
+            and svr_create_date BETWEEN #{svr_create_date} and #{svr_create_date1}
+        </if>
+        <if test="svr_result !=null and svr_result!=''">
+            and svr_result LIKE '%${svr_result}%'
+        </if>
+    </where>
+    limit ${(pageNow-1)*pageSize},${pageSize}
+</select>
+
+    <select id="selectSctCount" resultType="long" parameterType="java.util.Map">
+        select COUNT(1) from sct_service
+        <where>
+            <if test="svr_cust_name !=null and svr_cust_name!=''">
+               and svr_cust_name LIKE '%${svr_cust_name}%'
+            </if>
+            <if test="svr_title !=null and svr_title!=''">
+                and svr_title LIKE '%${svr_title}%'
+            </if>
+            <if test="svr_type !=null and svr_type!=''">
+                and svr_type LIKE '%${svr_type}%'
+            </if>
+            <if test="svr_create_date!=null and svr_create_date !='' and svr_create_date1!=null and svr_create_date1!=''">
+                and svr_create_date BETWEEN #{svr_create_date} and #{svr_create_date1}
+            </if>
+            <if test="svr_result !=null and svr_result!=''">
+                and svr_result LIKE '%${svr_result}%'
+            </if>
+        </where>
+    </select>
+
+    <insert id="addSct" parameterType="java.util.Map">
+        insert into sct_service(svr_type,svr_title,svr_cust_name,svr_result,svr_request,svr_create_by,svr_create_date,svr_due_to,svr_due_date)
+        VALUE (#{svr_type},#{svr_title},#{svr_cust_name},#{svr_result},#{svr_request},#{svr_create_by},#{svr_create_date},#{svr_due_to},#{svr_due_date})
+    </insert>
+
+    <select id="selectSctById" parameterType="long" resultType="sct_Service">
+        select * from sct_service where svr_id=#{id}
+    </select>
+
+    <update id="updateSct" parameterType="java.util.Map">
+        UPDATE sct_service SET svr_deal=#{svr_deal},svr_deal_by=#{svr_deal_by},svr_deal_date=#{svr_deal_date},
+        svr_result=#{svr_result},svr_satisfy=#{svr_satisfy} where svr_id=#{svr_id}
+    </update>
+
+    <delete id="delSct" parameterType="long">
+        DELETE from sct_service where svr_id=#{id}
+    </delete>
+
+    <update id="updateSvr_due_to" parameterType="java.util.Map">
+        UPDATE sct_service SET svr_due_id=#{svr_due_id},svr_due_to=#{svr_due_to},svr_result=#{svr_result} WHERE svr_id=#{svr_id}
+    </update>
+
+    <!-- 服务分析 -->
+    <select id="selectTypeAndCount" resultType="customerServiceAnalysis">
+        SELECT svr_type,COUNT(1) COUNT FROM `sct_service` WHERE `svr_create_date` &gt;= #{startTime} AND  svr_create_date &lt; #{endTime} GROUP BY `svr_type`
+    </select>
+</mapper>
